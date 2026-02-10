@@ -1,19 +1,19 @@
 Pada pengembangan aplikasi ini, saya telah mengimplementasikan dua fitur baru, yaitu edit product dan delete product, menggunakan framework Spring Boot dengan pendekatan arsitektur Model–View–Controller (MVC). Implementasi ini dilakukan dengan memperhatikan prinsip clean code serta praktik secure coding yang telah dipelajari dalam modul ini.
 
-- Penerapan Prinsip Clean Code
+## Penerapan Prinsip Clean Code
 
 Beberapa prinsip clean code yang telah diterapkan pada kode sumber aplikasi ini antara lain:
 
 1. Separation of Concerns (SoC)
 Aplikasi dibagi ke dalam beberapa lapisan dengan tanggung jawab yang jelas, yaitu:
 
--- Controller: menangani HTTP request dan response.
+- - Controller: menangani HTTP request dan response.
 
--- Service: berisi logika bisnis aplikasi.
+- - Service: berisi logika bisnis aplikasi.
 
--- Repository: bertanggung jawab terhadap pengelolaan data.
+- - Repository: bertanggung jawab terhadap pengelolaan data.
 
--- Model: merepresentasikan struktur data produk.
+- - Model: merepresentasikan struktur data produk.
 
 Pemisahan ini membuat kode lebih mudah dipahami, diuji, dan dikembangkan di masa depan.
 
@@ -26,7 +26,7 @@ Logika pengambilan dan manipulasi data produk dipusatkan pada layer service dan 
 4. Struktur Method yang Sederhana
 Setiap method dibuat dengan satu tujuan yang jelas (single responsibility), misalnya method editProductPost hanya bertanggung jawab untuk memproses perubahan data produk.
 
-- Penerapan Secure Coding Practices
+## Penerapan Secure Coding Practices
 
 Dalam pengembangan fitur edit dan delete, beberapa praktik keamanan juga telah diterapkan, antara lain:
 
@@ -39,7 +39,7 @@ Pada halaman edit, productId dikirim melalui input tersembunyi (hidden field), s
 3. Validasi Alur Aplikasi
 Setiap request edit dan delete dipetakan secara eksplisit melalui controller (@GetMapping dan @PostMapping), sehingga mencegah akses endpoint yang tidak terdefinisi.
 
-- Evaluasi dan Perbaikan Kode
+## Evaluasi dan Perbaikan Kode
 
 Selama proses pengembangan, ditemukan beberapa hal yang dapat diperbaiki, antara lain:
 
