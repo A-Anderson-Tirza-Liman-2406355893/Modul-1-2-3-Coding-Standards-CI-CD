@@ -44,11 +44,14 @@ Setiap request edit dan delete dipetakan secara eksplisit melalui controller (@G
 Selama proses pengembangan, ditemukan beberapa hal yang dapat diperbaiki, antara lain:
 
 - Product ID Tidak Diinisialisasi Saat Create
+
 Ini merupakan kesalahan saya pada awalnya implementasi. Awalnya, productId tidak dihasilkan secara otomatis saat pembuatan produk. Hal ini menyebabkan error ketika melakukan edit karena URL membutuhkan ID yang valid.
 Perbaikan dilakukan dengan menghasilkan productId secara otomatis menggunakan UUID, sehingga setiap produk memiliki identifier yang unik.
 
 - Belum Menggunakan Validasi Input
+
 Saat ini aplikasi belum menggunakan validasi seperti @NotNull atau @Min pada atribut produk. Ke depannya, validasi ini dapat ditambahkan untuk meningkatkan keandalan aplikasi.
 
 - Penyimpanan Data Masih In-Memory
+
 Repository masih menggunakan struktur data List, sehingga data akan hilang saat aplikasi dihentikan. Untuk pengembangan selanjutnya, aplikasi dapat diintegrasikan dengan database menggunakan Spring Data JPA.
