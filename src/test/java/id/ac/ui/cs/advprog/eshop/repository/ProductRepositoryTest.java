@@ -121,5 +121,55 @@ class ProductRepositoryTest {
         assertFalse(iterator.hasNext());
     }
 
+    @Test
+    void testFindProductById_IfProductDoesNotExistButListIsNotEmpty() {
+        Product product = new Product();
+        productRepository.create(product); // ID di-generate oleh repository
 
+        // Cari ID yang jelas-jelas tidak ada
+        Product result = productRepository.findProductById("id-tidak-ada");
+
+        // Loop akan berjalan, tapi kondisi 'if' akan bernilai false sehingga me-return null
+        assertNull(result);
+    }
+
+    @Test
+    void testFindProductById_IfProductIsMoreThanOne() {
+        // Tambahkan produk pertama
+        Product product1 = new Product();
+        Product savedProduct1 = productRepository.create(product1);
+
+        // Tambahkan produk kedua
+        Product product2 = new Product();
+        Product savedProduct2 = productRepository.create(product2);
+
+        // Cari produk KEDUA menggunakan ID yang di-generate repository.
+        Product result = productRepository.findProductById(savedProduct2.getProductId());
+
+        assertEquals(savedProduct2.getProductId(), result.getProductId());
+    }
+
+    @Test
+    void testEditProduct_IfProductDoesNotExistButListIsNotEmpty() {
+        // Buat satu produk agar list tidak kosong
+        Product product1 = new Product();
+        product1.setProductName("Sampo Asli");
+        product1.setProductQuantity(100);
+        Product savedProduct1 = productRepository.create(product1);
+
+        // Coba edit produk dengan ID yang berbeda (ID tidak ada di list)
+        Product editedProduct = new Product();
+        editedProduct.setProductId("id-tidak-ada");
+        editedProduct.setProductName("Sampo Palsu");
+        editedProduct.setProductQuantity(20);
+
+        productRepository.edit(editedProduct);
+
+        // Loop berjalan, tapi if false. Pastikan produk asli tidak ikut berubah
+        // Cari menggunakan ID yang di-generate repository
+        Product result = productRepository.findProductById(savedProduct1.getProductId());
+
+        assertEquals("Sampo Asli", result.getProductName());
+        assertEquals(100, result.getProductQuantity());
+    }
 }
