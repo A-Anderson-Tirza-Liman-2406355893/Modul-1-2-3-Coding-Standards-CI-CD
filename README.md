@@ -1,3 +1,5 @@
+Deployment Link: https://successful-danica-adpro2026-f827b48d.koyeb.app/product/list
+
 # REFLECTION 1
 
 Pada pengembangan aplikasi ini, saya telah mengimplementasikan dua fitur baru, yaitu edit product dan delete product, menggunakan framework Spring Boot dengan pendekatan arsitektur Model–View–Controller (MVC). Implementasi ini dilakukan dengan memperhatikan prinsip clean code serta praktik secure coding yang telah dipelajari dalam modul ini.
