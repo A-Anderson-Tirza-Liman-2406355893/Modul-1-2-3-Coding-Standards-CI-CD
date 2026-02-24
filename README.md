@@ -1,5 +1,7 @@
 Deployment Link: https://successful-danica-adpro2026-f827b48d.koyeb.app/product/list
 
+# Modul 1
+
 # REFLECTION 1
 
 Pada pengembangan aplikasi ini, saya telah mengimplementasikan dua fitur baru, yaitu edit product dan delete product, menggunakan framework Spring Boot dengan pendekatan arsitektur Model–View–Controller (MVC). Implementasi ini dilakukan dengan memperhatikan prinsip clean code serta praktik secure coding yang telah dipelajari dalam modul ini.
@@ -99,3 +101,23 @@ Untuk meningkatkan kebersihan dan kualitas kode, beberapa perbaikan yang dapat d
   Setiap functional test class sebaiknya hanya menguji satu fitur utama, misalnya create product atau verifikasi product list, sehingga test tetap jelas dan terstruktur.
 
 Dengan menerapkan perbaikan tersebut, functional test suite akan menjadi lebih bersih, mudah dikembangkan, dan tetap selaras dengan prinsip clean code meskipun jumlah test semakin bertambah.
+
+# Modul 2
+
+# Reflection
+
+Pada bagian ini, saya mengimplementasi Continuous Integration dan Continuous Deployment (CI/CD) yang telah dilakukan menggunakan GitHub Actions dan platform PaaS (Koyeb).
+
+## 1. Code Quality / Security Issues dan Strategi Penyelesaian
+Selama pengerjaan exercise ini, salah satu isu kualitas dan keamanan yang saya perbaiki adalah Pinned Dependencies pada workflow GitHub Actions.
+
+- Isunya adalah tag yang digunakan pada action GitHub dan image Docker sebelumnya bersifat mutable (dapat berubah dari waktu ke waktu, misalnya menggunakan tag @v4 atau latest). Hal ini menimbulkan celah keamanan tingkat menengah/tinggi, karena jika versi action tersebut diubah oleh pihak ketiga (baik karena update biasa atau disusupi kode berbahaya), alur eksekusi CI/CD aplikasi bisa rusak atau terkompromi tanpa disadari.
+
+- Strategi penyelesaian yang saya lakukan adalah dengan mengikuti rekomendasi Security Hardening dari GitHub dan The Open Source Security Foundation (OpenSSF). Saya memodifikasi file workflow dengan mengganti tag versi mutable menjadi full-length commit SHA yang spesifik dan immutable (tidak dapat diubah). Proses ini dibantu melalui automasi Pull Request dari StepSecurity Bot. Dengan mengunci (pinning) dependensi ke commit SHA tertentu, saya memastikan bahwa pipeline selalu menjalankan kode pihak ketiga yang persis sama dan sudah diverifikasi keamanannya pada setiap eksekusi.
+
+## 2. Evaluasi Implementasi CI/CD
+Menurut saya, implementasi workflow GitHub dan konfigurasi repositori saat ini sudah memenuhi definisi dan standar dari Continuous Integration (CI) maupun Continuous Deployment (CD). Alasannya:
+
+- Pertama, dari sisi Continuous Integration, workflow telah dikonfigurasi agar setiap kali ada kode yang di-push atau diajukan melalui Pull Request. Kemudian, GitHub Actions secara otomatis akan menjalankan proses build, mengeksekusi seluruh test suites (unit dan functional test), serta melakukan analisis kualitas dan keamanan kode (lewat OSSF Scorecard). Hal ini memastikan bahwa setiap perubahan kode divalidasi kebenarannya secara terus-menerus sebelum digabungkan ke branch utama.
+
+- Kedua, dari sisi Continuous Deployment, repositori GitHub ini telah diintegrasikan secara langsung dengan Platform as a Service (PaaS) yaitu Koyeb menggunakan pendekatan Pull-based deployment (atau Auto-deploy). Begitu kode berhasil melewati tahap CI dan di-merge ke branch main, PaaS akan secara otomatis mendeteksi perubahan tersebut, menarik kode atau image terbaru, lalu men-deploy aplikasi ke environment produksi tanpa memerlukan intervensi manual sama sekali. Alur ini menciptakan siklus rilis perangkat lunak yang cepat, aman, dan konsisten.
