@@ -32,16 +32,16 @@ class HomePageFunctionalTest {
     @Test
     void pageTitle_isCorrect(ChromeDriver driver) throws Exception{
         driver.get(baseUrl);
+        // Karena di-redirect, title-nya sekarang adalah Product List
         String pageTitle = driver.getTitle();
-
-        assertEquals("ADV Shop", pageTitle);
+        assertEquals("Product List", pageTitle);
     }
 
     @Test
-    void welcomeMessage_homePage_isCorrect(ChromeDriver driver) throws Exception{
+    void headerMessage_isCorrect(ChromeDriver driver) throws Exception{
         driver.get(baseUrl);
-        String welcomeMessage = driver.findElement(By.tagName("h3")).getText();
-
-        assertEquals("Welcome", welcomeMessage);
+        // Di halaman ProductList.html, headernya menggunakan <h2>
+        String headerMessage = driver.findElement(By.tagName("h2")).getText();
+        assertEquals("Product List", headerMessage);
     }
 }
