@@ -8,7 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String homePage() {
-        // Ini akan otomatis mengalihkan (redirect) user dari "/" ke "/product/list"
         return "redirect:/product/list";
     }
 }
