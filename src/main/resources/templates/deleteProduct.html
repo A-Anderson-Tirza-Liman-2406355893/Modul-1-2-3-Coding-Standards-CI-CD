@@ -25,10 +25,10 @@
         </li>
     </ul>
 
-    <a th:href="@{/product/delete/{id}(id=${product.productId})}"
-       class="btn btn-danger">
-        Yes, Delete
-    </a>
+    <form th:action="@{/product/delete}" method="post" style="display:inline;">
+        <input type="hidden" name="id" th:value="${product.productId}" />
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    </form>
 
     <a th:href="@{/product/list}" class="btn btn-secondary">
         Cancel
