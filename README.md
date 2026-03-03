@@ -121,3 +121,222 @@ Menurut saya, implementasi workflow GitHub dan konfigurasi repositori saat ini s
 - Pertama, dari sisi Continuous Integration, workflow telah dikonfigurasi agar setiap kali ada kode yang di-push atau diajukan melalui Pull Request. Kemudian, GitHub Actions secara otomatis akan menjalankan proses build, mengeksekusi seluruh test suites (unit dan functional test), serta melakukan analisis kualitas dan keamanan kode (lewat OSSF Scorecard). Hal ini memastikan bahwa setiap perubahan kode divalidasi kebenarannya secara terus-menerus sebelum digabungkan ke branch utama.
 
 - Kedua, dari sisi Continuous Deployment, repositori GitHub ini telah diintegrasikan secara langsung dengan Platform as a Service (PaaS) yaitu Koyeb menggunakan pendekatan Pull-based deployment (atau Auto-deploy). Begitu kode berhasil melewati tahap CI dan di-merge ke branch main, PaaS akan secara otomatis mendeteksi perubahan tersebut, menarik kode atau image terbaru, lalu men-deploy aplikasi ke environment produksi tanpa memerlukan intervensi manual sama sekali. Alur ini menciptakan siklus rilis perangkat lunak yang cepat, aman, dan konsisten.
+
+# Modul 3
+
+# Reflection
+
+## S — Single Responsibility Principle (SRP)
+Apakah sudah diimplementasikan?
+- Ya, setelah refactor
+
+Prinsip SRP: Sebuah class hanya boleh memiliki satu alasan untuk berubah (one class → one responsibility)
+
+Artinya:
+- Controller → hanya mengatur HTTP request/response
+- Service → hanya mengatur business logic
+- Repository → hanya mengatur akses database
+
+Sebelum Refactor
+- ProductController dan CarController berada dalam satu file
+- Controller mengakses repository langsung
+- Controller menangani lebih dari satu domain
+
+Hal ini menyebabkan:
+- Jika logic Car berubah → ProductController ikut berubah
+- Satu class punya lebih dari satu responsibility
+
+Setelah Refactor
+
+Struktur dipisah:
+```
+controller/
+    ProductController.java
+    CarController.java
+
+service/
+    ProductService.java
+    CarService.java
+
+service/impl/
+    ProductServiceImpl.java
+    CarServiceImpl.java
+
+repository/
+    ProductRepository.java
+    CarRepository.java
+```
+
+Keterangan:
+- CarController hanya menangani request Car
+- ProductController hanya menangani request Product
+- Tidak ada class dengan lebih dari satu alasan berubah
+
+SRP sudah terpenuhi
+
+## O — Open/Closed Principle (OCP)
+Apakah sudah diimplementasikan?
+- Ya, setelah menghilangkan inheritance antar controller
+
+Prinsip OCP: Software entity harus open for extension tetapi closed for modification
+
+Artinya:
+- Kita bisa menambah behavior
+- Tanpa mengubah source code yang sudah ada
+
+Sebelum Refactor
+- public class CarController extends ProductController
+
+Masalah:
+- Coupling tidak perlu
+- Jika ubah ProductController → CarController ikut terpengaruh
+- Untuk tambah fitur baru harus memodifikasi parent class
+
+Setelah Refactor
+- Tidak ada inheritance antar controller
+- Masing-masing berdiri sendiri
+- Behavior baru ditambahkan melalui service layer
+
+Contoh:
+Jika ingin tambah MotorcycleController, kita cukup buat:
+
+```java
+@Controller
+@RequestMapping("/motorcycle")
+public class MotorcycleController
+```
+
+Tanpa mengubah ProductController.
+
+OCP sudah terpenuhi.
+
+## L — Liskov Substitution Principle (LSP)
+Apakah sudah diimplementasikan?
+- Ya, karena inheritance yang salah sudah dihapus
+
+Prinsip LSP: Subclass harus bisa menggantikan superclass tanpa merusak kebenaran program.
+
+Sebelum Refactor
+```java
+CarController extends ProductController
+```
+
+Padahal:
+- CarController tidak benar-benar "is-a" ProductController
+- Behavior tidak identik
+- Tidak bisa menggantikan parent secara logis
+
+Ini melanggar LSP
+
+Setelah Refactor
+- Tidak ada inheritance yang tidak valid
+- Semua controller berdiri sendiri
+- Substitusi tidak diperlukan
+
+Inheritance hanya digunakan jika benar-benar hubungan "is-a".
+
+Contoh yang benar:
+```java
+abstract class Vehicle
+class Car extends Vehicle
+class Motorcycle extends Vehicle
+```
+
+Bukan antar controller.
+
+LSP terpenuhi.
+
+## I — Interface Segregation Principle (ISP)
+Apakah sudah diimplementasikan?
+- Ya, sejak awal sudah baik.
+
+Prinsip ISP: Client tidak boleh dipaksa mengimplementasikan method yang tidak ia gunakan.
+
+Implementasi di Project
+- CarService
+- ProductService
+
+Dibuat secara terpisah.
+
+Tidak ada interface besar yang memaksa semua concrete class untuk mengimplementasi semua method.
+
+Karena interface sudah kecil dan spesifik, ISP terpenuhi.
+
+## D — Dependency Inversion Principle (DIP)
+Apakah sudah diimplementasikan?
+- Ya, setelah menghilangkan dependency ke concrete class.
+
+Prinsip DIP: High-level module tidak boleh bergantung pada low-level module. Keduanya harus bergantung pada abstraction.
+
+Sebelum Refactor
+```java
+private CarServiceImpl carService;
+
+private 
+```
+Dan controller meng-import repository langsung.
+
+Masalah: 
+- Controller tergantung concrete implementation
+- Tight coupling
+- Sulit di-test
+
+Setelah Refactor
+```java
+private final CarService carService;
+```
+
+Dan:
+
+```java
+@Service
+public class CarServiceImpl implements CarService
+```
+
+Sekarang:
+- Controller bergantung pada interface
+- Implementation bisa diganti tanpa ubah controller
+- Mudah di-mock saat testing
+
+## Keuntungan (advantages) menerapkan prinsip SOLID pada proyek:
+
+Maintainability (mudah dipelihara)
+- Kode yang menerapkan SRP dan DIP lebih mudah diperbaiki atau ditambah fitur tanpa risiko merusak bagian lain.
+Contoh: Setelah memisahkan CarController dari ProductController, perubahan pada endpoint Product tidak akan memengaruhi Car—jadi bug fix atau penambahan fitur bisa dilakukan lokal pada controller yang tepat.
+
+Testability (mudah diuji)
+- Bergantung pada interface (DIP) + constructor injection membuat unit test dan mocking menjadi sederhana.
+Contoh: ProductController sekarang menggunakan constructor injection pada ProductService → di test Anda cukup mock ProductService dan inject ke controller. Functional/unit test jadi deterministic dan cepat.
+
+Extensibility / Reusability (mudah diperluas dan digunakan ulang)
+- OCP membuat modul terbuka untuk penambahan perilaku tanpa mengubah kode lama.
+Contoh: Untuk menambah fitur export CSV pada entitas Car, Anda bisa menambahkan method baru di CarController atau menambah decorator/service baru tanpa memodifikasi ProductController atau repository.
+
+Robustness / Safety (mengurangi risiko regresi)
+- Menghindari pewarisan yang salah (mengikuti LSP) dan pemisahan tanggung jawab mengurangi efek samping tersembunyi ketika merubah kode.
+Contoh: Sebelumnya CarController extends ProductController — menambah endpoint di ProductController bisa menyebabkan perilaku tak terduga pada Car. Setelah dipisah, perubahan bersifat lokal.
+
+Clearer API/Contract (ISP & DIP)
+- Interface terpisah (ProductService, CarService) membuat kontrak jelas: controller hanya tahu operasi yang dibutuhkan. Ini mencegah controller terpaut pada method yang tidak relevan.
+Contoh: Controller hanya memiliki metode create/find/edit/delete yang relevan — coder lain cepat paham apa yang tersedia.
+
+## Kerugian (disadvantages) jika tidak menerapkan prinsip SOLID — dengan contoh nyata dari proyek
+Coupling tinggi
+- Jika kelas bergantung pada implementasi konkret atau banyak tanggung jawab digabung, perubahan sederhana dapat menimbulkan efek domino.
+Contoh nyata: CarController extends ProductController — mengubah routing/redirect di ProductController dapat memecahkan endpoint car/listCar sehingga menghasilkan 404/NoResourceFoundException.
+
+Sulit di-test (hard-to-test)
+- Ketergantungan langsung pada implementasi konkret membuat mocking sulit dan test menjadi integration-heavy.
+Contoh nyata: Jika controller meng-@Autowired CarServiceImpl langsung, unit test harus membuat instance CarServiceImpl (atau kompleks mocking), bukannya cukup mock interface CarService.
+
+Fragile code / Risiko regresi tinggi
+- Kode yang melanggar OCP/LSP seringkali rusak ketika dikembangkan lebih lanjut karena perubahan mempengaruhi subclass atau pengguna lain.
+Contoh nyata: Menaruh dua controller di satu file dan saling mewarisi menyebabkan runtime mapping yang tidak terduga — Spring mungkin tidak mendaftarkan bean seperti yang diharapkan → muncul error runtime (NoResourceFoundException).
+
+Duplikasi/Redundansi & Sulit dipelihara (violates DRY indirectly)
+- Tanpa ISP, interface besar memaksa klien mengimplementasikan/mengetahui method yang tidak diperlukan → implementasi menjadi besar dan berantakan.
+Contoh: Bila ada satu service yang mengurus Product+Car+Order dalam satu interface, controller akan menerima method yang tak perlu dan implementasinya jadi lebih sulit dipisah.
+
+Kesulitan integrasi CI/CD dan deployment aman
+- Kode rapuh/terkait erat mempersulit pembuatan test suite yang cepat dan andal; akibatnya pipeline CI/CD sering gagal atau butuh test environment berat.
+Contoh: Functional tests (Selenium) bergantung pada redirect/route yang stabil; jika kontroler memakai relative redirect atau mapping tumpang tindih, functional test flakey dan deployment otomatis rawan gagal.
